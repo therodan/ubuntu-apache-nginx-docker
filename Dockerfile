@@ -9,13 +9,10 @@ RUN apt-get update && apt-get install -y nginx apache2 libapache2-mod-fastcgi op
 # Apache
 COPY ./conf/apache/ports.conf /etc/apache2/ports.conf
 COPY ./conf/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY ./conf/apache/fastcgi.conf /etc/apache2/mods-available/fastcgi.conf
 
 RUN a2enmod actions && \
-	a2enmod rewrite \
-    && usermod -u 1000 www-data \
-    && usermod -G staff www-data
-
-COPY ./conf/apache/fastcgi.conf /etc/apache2/mods-available/fastcgi.conf
+	a2enmod rewrite
 
 RUN service php7.0-fpm start
 
@@ -29,10 +26,6 @@ COPY ./conf/nginx/ssl.conf /etc/nginx/conf.d/ssl.conf
 # Supervisor
 COPY ./conf/supervisord.conf /etc/supervisord.conf
 RUN chmod 400 /etc/supervisord.conf
-
-# Logs
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log
 
 EXPOSE 80
 EXPOSE 443
