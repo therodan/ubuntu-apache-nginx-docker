@@ -1,6 +1,10 @@
 FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install -y apache2 libapache2-mod-fastcgi php-fpm openssl supervisor
+RUN apt-get update && apt-get install -y nginx apache2 libapache2-mod-fastcgi openssl supervisor \
+    curl libpng12-dev libjpeg-dev libmcrypt-dev \
+    php-fpm php-dev php-gd php-curl php-mysqli php-mbstring php-zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Apache
 COPY ./conf/apache/ports.conf /etc/apache2/ports.conf
@@ -13,7 +17,7 @@ COPY ./conf/apache/fastcgi.conf /etc/apache2/mods-available/fastcgi.conf
 RUN service php7.0-fpm start
 
 # Nginx
-RUN apt-get install -y nginx && mkdir /etc/nginx/ssl
+RUN mkdir /etc/nginx/ssl
 
 COPY ./conf/nginx/default /etc/nginx/sites-available/default
 COPY ./conf/nginx/basic.conf /etc/nginx/conf.d/basic.conf
