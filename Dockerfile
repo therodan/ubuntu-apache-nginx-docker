@@ -10,7 +10,10 @@ RUN apt-get update && apt-get install -y nginx apache2 libapache2-mod-fastcgi op
 COPY ./conf/apache/ports.conf /etc/apache2/ports.conf
 COPY ./conf/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
-RUN a2enmod actions
+RUN a2enmod actions && \
+	a2enmod rewrite \
+    && usermod -u 1000 www-data \
+    && usermod -G staff www-data
 
 COPY ./conf/apache/fastcgi.conf /etc/apache2/mods-available/fastcgi.conf
 
